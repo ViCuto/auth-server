@@ -1,26 +1,39 @@
+---
+x-postgres:
+  jdbc_url: &jdbc-url jdbc:postgresql://postgres:5432/auth_db
+  user: &postgres-user user
+  password: &postgres-password password
+  db_name: &postgres-db-name auth_db
+
 services:
 
   auth-server:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: *jdbc-url
+      SPRING_DATASOURCE_USERNAME: *postgres-user
+      SPRING_DATASOURCE_PASSWORD: *postgres-password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
 
   postgres:
-    image: postgres:16-alpine
-
+    image: postgres:17-alpine
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: *postgres-db-name
+      POSTGRES_USER: *postgres-user
+      POSTGRES_PASSWORD: *postgres-password
     ports:
       - "5432:5432"
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "--username", "user" ]
+      test: [ "CMD", "pg_isready", "--username", *postgres-user ]
       interval: 5s
       timeout: 5s
       retries: 5
