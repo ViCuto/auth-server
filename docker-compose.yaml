@@ -1,7 +1,7 @@
 ---
 x-postgres:
   jdbc_url: &jdbc-url jdbc:postgresql://postgres:5432/auth_db
-  user: &postgres-user user
+  user: &postgres-user postgres
   password: &postgres-password password
   db_name: &postgres-db-name auth_db
 
