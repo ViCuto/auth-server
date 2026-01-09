@@ -1,6 +1,6 @@
-package com.sap.mentorship.authserver.repository.user;
+package com.sap.mentorship.authserver.repository;
 
-import com.sap.mentorship.authserver.domain.user.Role;
+import com.sap.mentorship.authserver.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

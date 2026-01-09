@@ -1,4 +1,4 @@
-package com.sap.mentorship.authserver.domain.user;
+package com.sap.mentorship.authserver.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
