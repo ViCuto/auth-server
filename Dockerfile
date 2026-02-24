@@ -14,6 +14,7 @@ WORKDIR /app
 #
 COPY build.gradle settings.gradle ./
 COPY src ./src
+COPY config ./config
 
 #
 # Build the application.
