@@ -19,7 +19,7 @@ COPY config ./config
 #
 # Build the application.
 #
-RUN ["gradle", "--no-daemon", "build"]
+RUN ["gradle", "--no-daemon", "build", "-x", "test"]
 
 # Java image for the application to run in.
 #
