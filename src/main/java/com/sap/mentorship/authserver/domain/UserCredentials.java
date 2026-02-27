@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_credentials")
 public class UserCredentials {
+    private static final String MSG_PASSWORD_EMPTY = "Password must not be empty";
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,13 +30,13 @@ public class UserCredentials {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private AppUser user;
+    private User user;
 
     protected UserCredentials() {
     }
 
     public UserCredentials(String password) {
-        Assert.hasText(password, "Password must not be empty");
+        Assert.hasText(password, MSG_PASSWORD_EMPTY);
         this.password = password;
         this.lastPasswordReset = Instant.now();
     }
@@ -52,16 +53,16 @@ public class UserCredentials {
         return lastPasswordReset;
     }
 
-    public AppUser getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(AppUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
     public void setPassword(String password) {
-        Assert.hasText(password, "Password must not be empty");
+        Assert.hasText(password, MSG_PASSWORD_EMPTY);
         this.password = password;
         this.lastPasswordReset = Instant.now();
     }
