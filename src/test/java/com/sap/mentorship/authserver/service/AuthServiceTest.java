@@ -95,4 +95,30 @@ class AuthServiceTest {
         assertFalse(result.isPresent(), "Expected login to fail when user is not found");
     }
 
+    @Test
+    void testLoginNullCredentialsReturnsEmpty() {
+        User user = new User(username);
+        user.setCredentials(null);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        Optional<User> result = authService.login(username, password);
+
+        assertFalse(result.isPresent(), "Expected login to fail when user has no credentials");
+    }
+
+    @Test
+    void testRegisterNullUsernameThrowsException() {
+        assertThrows(IllegalArgumentException.class,
+            () -> authService.register(null, password),
+            "Expected IllegalArgumentException for null username");
+    }
+
+    @Test
+    void testRegisterBlankPasswordThrowsException() {
+        assertThrows(IllegalArgumentException.class,
+            () -> authService.register(username, "   "),
+            "Expected IllegalArgumentException for blank password");
+    }
+
 }

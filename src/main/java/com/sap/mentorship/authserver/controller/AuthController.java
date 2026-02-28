@@ -3,8 +3,11 @@ package com.sap.mentorship.authserver.controller;
 import com.sap.mentorship.authserver.domain.User;
 import com.sap.mentorship.authserver.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +18,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    static final String MSG_LOGIN_SUCCESSFUL = "Login successful";
-    static final String MSG_INVALID_CREDENTIALS = "Invalid username or password";
+
+    private static final String MSG_LOGIN_SUCCESSFUL = "Login successful";
+    private static final String MSG_INVALID_CREDENTIALS = "Invalid username or password";
+
+    private static final String MSG_USERNAME_EXISTS_CONFLICT = "Username already exists";
+    private static final String MSG_VALIDATION_FAILED = "Validation failed: ";
 
     private final AuthService authService;
 
@@ -31,6 +38,8 @@ public class AuthController {
             return ResponseEntity.ok(message);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(MSG_USERNAME_EXISTS_CONFLICT);
         }
     }
 
@@ -44,4 +53,10 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(MSG_INVALID_CREDENTIALS);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return ResponseEntity.badRequest().body(MSG_VALIDATION_FAILED + ex.getMessage());
+    }
+
 }

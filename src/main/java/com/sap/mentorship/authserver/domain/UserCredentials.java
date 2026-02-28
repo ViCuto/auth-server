@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_credentials")
 public class UserCredentials {
+
     private static final String MSG_PASSWORD_EMPTY = "Password must not be empty";
 
     @Id

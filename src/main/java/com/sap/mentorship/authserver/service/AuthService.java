@@ -14,6 +14,7 @@ public class AuthService {
 
     static final String MSG_USER_REGISTERED = "User registered successfully";
     static final String MSG_USERNAME_EXISTS = "Username already exists";
+    static final String MSG_CREDENTIALS_BLANK = "Username and password must not be null or blank";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -25,6 +26,10 @@ public class AuthService {
 
     @Transactional
     public String register(String username, String password) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            throw new IllegalArgumentException(MSG_CREDENTIALS_BLANK);
+        }
+
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException(MSG_USERNAME_EXISTS);
         }
@@ -39,6 +44,7 @@ public class AuthService {
 
     public Optional<User> login(String username, String password) {
         return userRepository.findByUsername(username)
-            .filter(user -> passwordEncoder.matches(password, user.getCredentials().getPassword()));
+            .filter(user -> user.getCredentials() != null
+                && passwordEncoder.matches(password, user.getCredentials().getPassword()));
     }
 }

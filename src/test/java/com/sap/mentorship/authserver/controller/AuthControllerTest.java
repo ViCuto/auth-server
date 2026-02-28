@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -58,7 +59,7 @@ class AuthControllerTest {
         assertNotNull(response.getBody(), "Response body should not be null");
         assertInstanceOf(LoginResponse.class, response.getBody(), "Expected LoginResponse body");
         LoginResponse body = (LoginResponse) response.getBody();
-        assertEquals(AuthController.MSG_LOGIN_SUCCESSFUL, body.message(), "Expected success message in response");
+        assertEquals("Login successful", body.message(), "Expected success message in response");
         assertEquals("testuser", body.username(), "Expected username in response");
     }
 
@@ -70,7 +71,19 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.login(request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), "Expected HTTP 401 Unauthorized for invalid credentials");
-        assertEquals(AuthController.MSG_INVALID_CREDENTIALS, response.getBody(), "Expected invalid credentials message");
+        assertEquals("Invalid username or password", response.getBody(), "Expected invalid credentials message");
+    }
+
+    @Test
+    void testRegisterDuplicateUserThrowsDataIntegrityViolationException() {
+        AuthRequest request = new AuthRequest("duplicateuser", "password");
+        when(authService.register("duplicateuser", "password"))
+                .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
+
+        ResponseEntity<?> response = authController.register(request);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode(), "Expected HTTP 409 Conflict for duplicate username");
+        assertEquals("Username already exists", response.getBody(), "Expected error message in response body");
     }
 
 }

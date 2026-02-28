@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User {
+
     private static final String MSG_USERNAME_EMPTY = "Username must not be empty";
 
     @Id
